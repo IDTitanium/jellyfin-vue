@@ -1,37 +1,44 @@
 <template>
-  <v-col v-show="items.length > 0" class="home-section">
-    <h1 class="text-h5">
-      <span>{{ section.name }}</span>
-    </h1>
+  <div>
+    <v-row v-if="!loaded">
+      <v-col cols="12" md="4" sm="6">
+        <skeleton-card v-for="n in 24" :key="n" />
+      </v-col>
+    </v-row>
+    <v-col v-show="items.length > 0" class="home-section">
+      <h1 class="text-h5">
+        <span>{{ section.name }}</span>
+      </h1>
 
-    <vueper-slides
-      :bullets="false"
-      :bullets-outside="false"
-      :arrows-outside="false"
-      :visible-slides="section.shape === 'thumb-card' ? 4 : 8"
-      :slide-multiple="true"
-      :breakpoints="breakpoints"
-      fixed-height="true"
-    >
-      <vueper-slide v-for="item in items" :key="item.Id">
-        <template v-slot:content>
-          <card :shape="section.shape" :item="item" />
+      <vueper-slides
+        :bullets="false"
+        :bullets-outside="false"
+        :arrows-outside="false"
+        :visible-slides="section.shape === 'thumb-card' ? 4 : 8"
+        :slide-multiple="true"
+        :breakpoints="breakpoints"
+        fixed-height="true"
+      >
+        <vueper-slide v-for="item in items" :key="item.Id">
+          <template v-slot:content>
+            <card :shape="section.shape" :item="item" />
+          </template>
+        </vueper-slide>
+
+        <template v-slot:arrow-left>
+          <v-btn icon large>
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
         </template>
-      </vueper-slide>
 
-      <template v-slot:arrow-left>
-        <v-btn icon large>
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-      </template>
-
-      <template v-slot:arrow-right>
-        <v-btn icon large>
-          <v-icon>mdi-arrow-right</v-icon>
-        </v-btn>
-      </template>
-    </vueper-slides>
-  </v-col>
+        <template v-slot:arrow-right>
+          <v-btn icon large>
+            <v-icon>mdi-arrow-right</v-icon>
+          </v-btn>
+        </template>
+      </vueper-slides>
+    </v-col>
+  </div>
 </template>
 
 <script lang="ts">
@@ -61,7 +68,8 @@ export default Vue.extend({
         1904: {
           visibleSlides: this.section.shape === 'thumb-card' ? 4 : 8
         }
-      }
+      },
+      loaded: false
     };
   },
   async created() {
@@ -76,6 +84,9 @@ export default Vue.extend({
           enableTotalRecordCount: false,
           mediaTypes: 'Video'
         });
+        if (resumeItems.data) {
+          this.loaded = true;
+        }
 
         this.items = resumeItems.data.Items as BaseItemDto[];
         break;
@@ -90,6 +101,9 @@ export default Vue.extend({
           enableTotalRecordCount: false,
           mediaTypes: 'Audio'
         });
+        if (resumeItems.data) {
+          this.loaded = true;
+        }
 
         this.items = resumeItems.data.Items as BaseItemDto[];
         break;
@@ -103,6 +117,9 @@ export default Vue.extend({
           enableImageTypes: 'Primary,Backdrop,Thumb',
           parentId: this.section.libraryId
         });
+        if (latestItems.data) {
+          this.loaded = true;
+        }
 
         this.items = latestItems.data.Items as BaseItemDto[];
         break;
@@ -116,6 +133,9 @@ export default Vue.extend({
           enableImageTypes: 'Primary,Backdrop,Thumb',
           parentId: this.section.libraryId
         });
+        if (latestItems.data) {
+          this.loaded = true;
+        }
 
         this.items = latestItems.data;
         break;
